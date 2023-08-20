@@ -8,6 +8,10 @@ socket.on('NEW_MESSAGE_CREATED', payload => {
   console.log('payload :>> ', payload);
 });
 
+socket.on('NEW_MESSAGE_ERROR', payload => {
+  console.log('error :>> ', payload);
+});
+
 export default socket;
 
 // 'NEW_MESSAGE' => server:

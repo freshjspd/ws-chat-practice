@@ -16,7 +16,10 @@ function socketInit(httpServer) {
         const createdMessage = await Message.create(payload);
         // оповестить всех ,что есть новое сообщение
         io.emit('NEW_MESSAGE_CREATED', createdMessage.toObject());
-      } catch (err) {}
+      } catch (err) {
+        // отправляем ошибку себе
+        socket.emit('NEW_MESSAGE_ERROR', err);
+      }
     });
   });
 }
