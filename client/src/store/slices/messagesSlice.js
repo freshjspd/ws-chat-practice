@@ -17,20 +17,6 @@ export const getMessagesThunk = createAsyncThunk(
   }
 );
 
-export const createMessageThunk = createAsyncThunk(
-  `${MESSAGES_SLICE_NAME}/create`,
-  async (payload, thunkAPI) => {
-    try {
-      const {
-        data: { data },
-      } = await API.createMessage(payload);
-      return data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue({ message: err.message });
-    }
-  }
-);
-
 const initialState = {
   messages: [],
   isFetching: false,
@@ -41,6 +27,22 @@ const initialState = {
 const messagesSlice = createSlice({
   name: MESSAGES_SLICE_NAME,
   initialState,
+  reducers: {
+    createMessageFullfilled: (state, { payload }) => {
+      state.isFetching = false;
+      state.error = null;
+
+      if (state.messages.length >= state.limit) {
+        state.messages.splice(0, 1);
+      }
+
+      state.messages.push(payload);
+    },
+    createMessageError: (state, { payload }) => {
+      state.isFetching = false;
+      state.error = payload;
+    },
+  },
   extraReducers: builder => {
     // GET
     builder.addCase(getMessagesThunk.pending, state => {
@@ -56,25 +58,11 @@ const messagesSlice = createSlice({
       state.isFetching = false;
       state.error = payload;
     });
-    // CREATE
-    builder.addCase(createMessageThunk.pending, state => {
-      state.isFetching = true;
-      state.error = null;
-    });
-    builder.addCase(createMessageThunk.fulfilled, (state, { payload }) => {
-      state.isFetching = false;
-      if (state.messages.length >= state.limit) {
-        state.messages.splice(0, 1);
-      }
-      state.messages.push(payload);
-    });
-    builder.addCase(createMessageThunk.rejected, (state, { payload }) => {
-      state.isFetching = false;
-      state.error = payload;
-    });
   },
 });
 
-const { reducer } = messagesSlice;
+const { reducer, actions } = messagesSlice;
+
+export const { createMessageFullfilled, createMessageError } = actions;
 
 export default reducer;
