@@ -1,13 +1,11 @@
 import { useEffect, useLayoutEffect } from 'react';
 import { Formik, Form, Field } from 'formik';
-import {
-  createMessageThunk,
-  getMessagesThunk,
-} from './store/slices/messagesSlice';
+import { getMessagesThunk } from './store/slices/messagesSlice';
 import './App.css';
 import { connect } from 'react-redux';
+import { createMessageWs } from './api/ws';
 
-function App({ messages, isFetching, error, limit, create, get }) {
+function App({ messages, isFetching, error, limit, get }) {
   useEffect(() => {
     get(limit);
   }, [limit]);
@@ -20,7 +18,8 @@ function App({ messages, isFetching, error, limit, create, get }) {
   }, [messages.length]);
 
   const addMessage = (values, formikBag) => {
-    create(values);
+    // create(values); // http
+    createMessageWs(values);
     formikBag.resetForm();
   };
 
@@ -52,7 +51,6 @@ const mapStateToProps = ({ chat }) => chat;
 
 const mapDispatchToProps = dispatch => ({
   get: limit => dispatch(getMessagesThunk(limit)),
-  create: values => dispatch(createMessageThunk(values)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
