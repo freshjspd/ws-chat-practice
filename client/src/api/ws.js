@@ -6,6 +6,8 @@ import {
 
 const socket = io('ws://localhost:5000'); // => 'connection' on server
 
+// TODO move SOCKET evetns to constants
+
 export const createMessageWs = payload => socket.emit('NEW_MESSAGE', payload);
 
 export function bringStoreToWs(store) {
